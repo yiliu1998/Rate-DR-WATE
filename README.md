@@ -1,5 +1,5 @@
-# Rate-DR-WATE
-Rate doubly robust (RDR) estimation for weighted average treatment effects (WATEs). The R package implements three RDR estimators for a general class of causal estimands, the WATEs. 
+# RDRwate
+Rate doubly robust (RDR) estimation for weighted average treatment effects (WATEs). We developed an R package (`RDRwate`) implementing three RDR estimators for WATE, a general class of causal estimands. We allow users implement the estimation and inference for a number of popular WATEs in the class, including ATE, ATT, ATC, ATO (overlap weights), ATM (matching weights), ATEN (entropy weights), and ATB (beta family weights). 
 
 ## Contact 
 The R code is maintained by Yi Liu (Please feel free to reach out at yi.liu.biostat[at]gmail[dot]com, if you have any questions).
