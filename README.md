@@ -16,7 +16,7 @@ devtools::install_github("yiliu1998/Rate-DR-WATE")
 ```
 
 ## Demonstration
-You can download and run this Rmd file ([click here]) in your R Studio after downloading the package, which gives an illustrative example of our package.  
+You can download and run this Rmd file ([click here](https://github.com/yiliu1998/Rate-DR-WATE/tree/main/vignettes)) in your R Studio after downloading the package, which gives an illustrative example of our package.  
 
 ## Contact 
 The R code is maintained by Yi Liu (Please feel free to reach out at yi.liu.biostat[at]gmail[dot]com, if you have any questions).
