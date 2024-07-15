@@ -2,7 +2,9 @@
 Rate doubly robust (RDR) estimation for weighted average treatment effects (WATEs). We developed an R package (`RDRwate`) implementing three RDR estimators for WATE, a general class of causal estimands. We allow users implement the estimation and inference for a number of popular WATEs in the class, including ATE, ATT, ATC, ATO (overlap weights), ATM (matching weights), ATEN (entropy weights), and ATB (beta family weights). The proposed estimators include: 
 
 * an efficient influence function (EIF)-based estimator; 
-* two double/debiased machine learning (DML)-based estimators (DML-1 and DML-2), which actually applies the cross-fitting algorithm on the EIF-based estimator. We also implement the variance estimations of these estimators in our package.  
+* two double/debiased machine learning (DML)-based estimators (DML-1 and DML-2), which actually applies the cross-fitting algorithm on the EIF-based estimator.
+
+We also implement the variance estimations of these estimators in our package.  
 
 ## Installation
 To install the latest version of the R package from GitHub, please run following commands in R:
