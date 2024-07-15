@@ -1,11 +1,18 @@
 Package: RDRwate
 Type: Package
 Title: Rate Doubly Robust Estimation for Weighted Average Treatment Effects
-Version: 0.1.0
+Version: 1.1
 Authors@R: c(
-    person("Yi", "Liu", email = "yi.iu.biostat@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0935-007X")),
-    person("Yiming", "Wang", email = "wangyiming859@gmail.com", role = "aut"),
-    person("Shu", "Yang", email = "syang24@ncsu.edu", role = "aut")
+    person("Yi", "Liu", 
+            email = "yi.iu.biostat@gmail.com", 
+            role = c("aut", "cre"), 
+            comment = c(ORCID = "0000-0002-0935-007X")),
+    person("Yiming", "Wang", 
+            email = "wangyiming859@gmail.com", 
+            role = "aut"),
+    person("Shu", "Yang", 
+            email = "syang24@ncsu.edu", 
+            role = "aut")
 )
 Maintainer: Yi Liu <yi.iu.biostat@gmail.com>
 Description: The package implements rate doubly robust (RDR) estimation for weighted average treatment effect (WATE). It includes a number of popular WATEs. 
