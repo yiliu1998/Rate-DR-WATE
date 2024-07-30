@@ -1,7 +1,7 @@
 ---
 title: "An illustrative example for R package `RDRwate`"
 author: "Yi Liu"
-date: "July 14, 2024"
+date: "July 31, 2024"
 output: html_document
 ---
 
@@ -68,6 +68,7 @@ Then, plug-in these arguments to our main function `RDRwate()`:
 ```{r}
 v1 <- c(3,5)
 v2 <- c(3,5)
+beta=TRUE
 result.eif <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
                       method="EIF", 
                       ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
@@ -77,10 +78,14 @@ result.eif
 ```
 
 ```{r}
+v1 <- c(3,5)
+v2 <- c(3,5)
+beta=TRUE
 result.dml <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
                       method="DML", n.folds=5,
                       ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
                       out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
                       seed=1)
+result.dml
 ```
 
