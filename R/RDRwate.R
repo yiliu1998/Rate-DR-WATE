@@ -56,7 +56,8 @@ RDRwate <- function(A,
 
     set.seed(seed=seed)
     pred.folds <- createFolds(1:n, k=n.folds, list=T)
-    est <- se <- c()
+    est.dml1 <- se.dml1 <- c()
+    e.h.dml2 <- mu1.h.dml2 <- mu0.h.dml2 <- A.dml2 <- Y.dml2 <- c()
     for(i in 1:n.folds) {
       pred.ind <- pred.folds[[i]]
       train.ind <- (1:n)[-pred.ind]
@@ -73,14 +74,26 @@ RDRwate <- function(A,
 
       result <- .Eif_Wate(A=A[pred.ind], Y=Y[pred.ind], e.h=e.h, mu1.h=mu1.h, mu0.h=mu0.h,
                           beta=beta, v1=v1, v2=v2)
-      est <- cbind(est, result$Est)
-      se <- cbind(se, result$Std.Err)
+      est.dml1 <- cbind(est.dml1, result$Est)
+      se.dml1 <- cbind(se.dml1, result$Std.Err)
+
+      e.h.dml2 <- c(e.h.dml2, e.h)
+      mu1.h.dml2 <- c(mu1.h.dml2, mu1.h)
+      mu0.h.dml2 <- c(mu0.h.dml2, mu0.h)
+      A.dml2 <- c(A.dml2, A[pred.ind])
+      Y.dml2 <- c(Y.dml2, Y[pred.ind])
     }
-    result.dml <- data.frame(weights=result$weights,
-                             Est=apply(est, 1, mean),
-                             Std.Err.mean=apply(se, 1, mean)/sqrt(n.folds),
-                             Std.Err.median=apply(se, 1, median)/sqrt(n.folds))
-    return(result.dml)
+    result.dml.1 <- data.frame(weights=result$weights,
+                               Est=apply(est.dml1, 1, mean),
+                               Std.Err=apply(se.dml1, 1, mean)/sqrt(n.folds))
+
+    .dml2 <- .Eif_Wate(A=A.dml2, Y=Y.dml2, e.h=e.h.dml2, mu1.h=mu1.h.dml2, mu0.h=mu0.h.dml2,
+                        beta=beta, v1=v1, v2=v2)
+    result.dml.2 <- data.frame(weights=.dml2$weights,
+                               Est=.dml2$Est,
+                               Std.Err=.dml2$Std.Err)
+
+    return(list(result.dml.1=result.dml.1, result.dml.2=result.dml.2))
   }
 }
 
@@ -143,4 +156,3 @@ RDRwate <- function(A,
   EIF.df <- data.frame(weights=weights, Est=EIF.est, Std.Err=sqrt(colMeans(EIF^2)/n))
   return(EIF.df)
 }
-
