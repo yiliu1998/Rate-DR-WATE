@@ -40,6 +40,12 @@ Running the following code, two sets of pre-generated observational data (`df.ho
 load(system.file("data", "example.Rdata", package="RDRwate"))
 ```
 
+A quick look to the generated data:
+
+```{r}
+head(df.hete)
+```
+
 We allow users to specify different methods for nuisance function estimation and prediction in our RDR estimators of WATE. The complete list of these methods can be found using the following code. 
 
 ```{r}
