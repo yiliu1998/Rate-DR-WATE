@@ -46,9 +46,9 @@ We also allow users to specify different methods for nuisance function estimatio
 SuperLearner::listWrappers()
 ```
 
-Next, we can implement our package using code as follows. We consider evaluating the following estimands: ATE (overall), ATT (treated), ATC (controls), ATO (overlap weights), ATM (matching weights), ATEN (entropy), and two ATB's (beta weights, with $\nu_1=\nu_2\in\{3,5\}$). As an illustration, we apply our method on the dataset `df.hete`. We include `SL.glm`, `SL.glm.interaction` and `SL.glmnet` in the ensemble library of `SuperLearner` for running our methods. 
+Next, we can implement our package using code as follows. We consider evaluating the following estimands: ATE (overall), ATT (treated), ATC (controls), ATO (overlap weights), ATM (matching weights), ATEN (entropy), and two ATB's (beta weights, with $\nu_1=\nu_2\in\{3,5\}$). As an example, we consider applying our method on the dataset `df.hete`. We include `SL.glm`, `SL.glm.interaction` and `SL.glmnet` in the ensemble library of `SuperLearner` for getting our nuisance function estimates. 
 
-As an important remark, we do not currently allow missing data (in all covariates, treatment and outcome) in the dataset. Therefore, if your data have missing values, we suggest either a complete-case analysis or imputing missing data first. Once the data is cleaned and prepared, it is ready to run our methods. The first step is to extract the binary treatment vector, outcome vector and covariates matrix (can also be a data frame). 
+As an important remark, we do not currently allow **missing data** (in all covariates, treatment and outcome) in the dataset. Therefore, if your data have missing values, we suggest either doing a complete-case analysis or imputing missing data first. Once the data is cleaned and prepared, it is ready to run our methods. The first step is to extract the binary treatment vector, outcome vector and covariates matrix (can also be a data frame). 
 
 ```{r}
 A <- df.hete$A
@@ -68,6 +68,16 @@ result.eif <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
                       out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
                       seed=1)
 result.eif
+
+weights       Est    Std.Err
+1   overall 10.234560 0.09159221
+2   treated 10.717672 0.12000207
+3   control  9.729105 0.13605199
+4   overlap 10.160023 0.10447144
+5  matching 10.058661 0.13527458
+6   entropy 10.174391 0.09968131
+7 beta(3,3) 10.061675 0.53400202
+8 beta(5,5) 10.029801 0.87891157
 ```
 
 ```{r}
