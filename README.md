@@ -67,8 +67,10 @@ result.eif <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
                       ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
                       out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
                       seed=1)
-result.eif
+print(result.eif)
+```
 
+```{r}
 weights       Est    Std.Err
 1   overall 10.234560 0.09159221
 2   treated 10.717672 0.12000207
@@ -89,11 +91,35 @@ result.dml <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
                       ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
                       out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
                       seed=1)
-result.dml
+print(result.dml)
+```
+
+```{r}
+$result.dml.1
+    weights       Est   Std.Err
+1   overall 10.236479 0.0916399
+2   treated 10.722442 0.1200593
+3   control  9.723038 0.1359380
+4   overlap 10.158679 0.1051220
+5  matching 10.042332 0.1356507
+6   entropy 10.175380 0.1002631
+7 beta(3,3) 10.094221 0.5432445
+8 beta(5,5) 10.123608 0.9244998
+
+$result.dml.2
+    weights       Est    Std.Err
+1   overall 10.236479 0.09166915
+2   treated 10.721589 0.12013919
+3   control  9.728936 0.13602753
+4   overlap 10.160243 0.10514657
+5  matching 10.044138 0.13573247
+6   entropy 10.176528 0.10029061
+7 beta(3,3) 10.106283 0.53525898
+8 beta(5,5) 10.146469 0.88103159
 ```
 
 ## Contact 
-The R code is maintained by Yi Liu (Please feel free to reach out at yi.liu.biostat[at]gmail[dot]com, if you have any questions).
+The R code is maintained by Yi Liu (Please feel free to reach out at yi.liu.biostat@gmail.com, if you have any questions).
 
 ## Reference
 Please cite the following paper:
