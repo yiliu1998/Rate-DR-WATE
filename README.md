@@ -20,13 +20,13 @@ You can download and run this Rmd file ([click here](https://github.com/yiliu199
 
 Load our package: 
 
-```{r}
+```r
 library(RDRwate)
 ```
 
 The following packages are also required:
 
-```{r}
+```r
 library(dplyr)
 library(ggplot2)
 library(SuperLearner)
@@ -36,13 +36,13 @@ library(caret)
 
 Running the following code, two sets of pre-generated observational data (`df.homo` and `df.hete`) will show up in the R environment. 
 
-```{r}
+```r
 load(system.file("data", "example.Rdata", package="RDRwate"))
 ```
 
 We also allow users to specify different methods for nuisance function estimation and prediction in our RDR estimators of WATE. The complete list of these methods can be found using the following code. 
 
-```{r}
+```r
 SuperLearner::listWrappers()
 ```
 
@@ -50,7 +50,7 @@ Next, we can implement our package using code as follows. We consider evaluating
 
 As an important remark, we do not currently allow **missing data** (in all covariates, treatment and outcome) in the dataset. Therefore, if your data have missing values, we suggest either doing a complete-case analysis or imputing missing data first. Once the data is cleaned and prepared, it is ready to run our methods. The first step is to extract the binary treatment vector, outcome vector and covariates matrix (can also be a data frame). 
 
-```{r}
+```r
 A <- df.hete$A
 Y <- df.hete$Y
 X <- df.hete %>% select(-A, -Y)
@@ -58,8 +58,7 @@ X <- df.hete %>% select(-A, -Y)
 
 Then, plug-in these arguments to our main function `RDRwate()`: 
 
-```{r}
-if(1==1)
+```r
 v1 <- c(3,5)
 v2 <- c(3,5)
 beta=TRUE
@@ -71,7 +70,7 @@ result.eif <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
 print(result.eif)
 ```
 
-```{r}
+```r
 weights       Est    Std.Err
 1   overall 10.234560 0.09159221
 2   treated 10.717672 0.12000207
@@ -83,7 +82,7 @@ weights       Est    Std.Err
 8 beta(5,5) 10.029801 0.87891157
 ```
 
-```{r}
+```r
 v1 <- c(3,5)
 v2 <- c(3,5)
 beta=TRUE
@@ -95,7 +94,7 @@ result.dml <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
 print(result.dml)
 ```
 
-```{r}
+```r
 $result.dml.1
     weights       Est   Std.Err
 1   overall 10.236479 0.0916399
