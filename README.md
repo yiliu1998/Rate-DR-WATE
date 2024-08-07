@@ -59,6 +59,7 @@ X <- df.hete %>% select(-A, -Y)
 Then, plug-in these arguments to our main function `RDRwate()`: 
 
 ```{r}
+if(1==1)
 v1 <- c(3,5)
 v2 <- c(3,5)
 beta=TRUE
