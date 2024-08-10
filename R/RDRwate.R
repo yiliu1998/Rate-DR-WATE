@@ -98,7 +98,7 @@ RDRwate <- function(A,
       Est.dml2 <- rbind(Est.dml2, .dml2$Est)
 
       SE.dml1 <- rbind(SE.dml1, apply(se.dml1, 1, mean)/sqrt(n.folds))
-      SE.dml2 <- rbind(SE.dml2, .dml2$Std.Err)
+      SE.dml2 <- rbind(SE.dml2, .dml2$Std.Err/sqrt(n.folds))
     }
     result.dml.1 <- data.frame(weights=result$weights,
                                Est=apply(Est.dml1, 2, mean, na.rm=T),
