@@ -87,8 +87,8 @@ v2 <- c(3,5)
 beta=TRUE
 result.eif <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
                       method="EIF", 
-                      ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
-                      out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
+                      ps.library=c("SL.glm", "SL.glmnet"),
+                      out.library=c("SL.glm", "SL.glmnet"),
                       seed=1)
 print(result.eif)
 ```
@@ -105,41 +105,45 @@ weights       Est    Std.Err
 8 beta(5,5) 10.029801 0.87891157
 ```
 
+We apply the DML-based methods using 10 sample splits (i.e., repeating cross-fitting 5 times by different random sample splitting) and 5 folds for cross-fitting. 
+
 ```r
 v1 <- c(3,5)
 v2 <- c(3,5)
 beta=TRUE
 result.dml <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
-                      method="DML", n.folds=5,
-                      ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
-                      out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
+                      method="DML", n.folds=5, n.split=5, 
+                      ps.library=c("SL.glm", "SL.glmnet"),
+                      out.library=c("SL.glm", "SL.glmnet"),
                       seed=1)
 print(result.dml)
 ```
 
 ```r
 $result.dml.1
-    weights       Est   Std.Err
-1   overall 10.236479 0.0916399
-2   treated 10.722442 0.1200593
-3   control  9.723038 0.1359380
-4   overlap 10.158679 0.1051220
-5  matching 10.042332 0.1356507
-6   entropy 10.175380 0.1002631
-7 beta(3,3) 10.094221 0.5432445
-8 beta(5,5) 10.123608 0.9244998
+    weights       Est   SE.mean  SE.median
+1   overall 10.238393 0.0917362 0.09172764
+2   treated 10.725430 0.1203668 0.12035407
+3   control  9.727280 0.1360394 0.13605126
+4   overlap 10.162204 0.1056018 0.10558813
+5  matching 10.058743 0.1360952 0.13607341
+6   entropy 10.176439 0.1007624 0.10072919
+7 beta(3,3) 10.041305 0.5411684 0.53918889
+8 beta(5,5)  9.989887 0.9185246 0.90626480
 
 $result.dml.2
-    weights       Est    Std.Err
-1   overall 10.236479 0.09166915
-2   treated 10.721589 0.12013919
-3   control  9.728936 0.13602753
-4   overlap 10.160243 0.10514657
-5  matching 10.044138 0.13573247
-6   entropy 10.176528 0.10029061
-7 beta(3,3) 10.106283 0.53525898
-8 beta(5,5) 10.146469 0.88103159
+    weights       Est    SE.mean  SE.median
+1   overall 10.235929 0.09182739 0.09195195
+2   treated 10.689941 0.12135043 0.12037325
+3   control  9.758034 0.13511888 0.13590928
+4   overlap 10.150839 0.10492282 0.10503028
+5  matching 10.038948 0.13566287 0.13621179
+6   entropy 10.166876 0.10021070 0.10029119
+7 beta(3,3)  9.789291 0.53855173 0.53947741
+8 beta(5,5)  9.422549 0.90116910 0.89831503
 ```
+
+The printed results contain both mean and median strategies for standard error estimation, based on <a href="https://www.aeaweb.org/articles?id=10.1257/aer.p20171038">Chernozhukov et al. (2017)</a>. In this example, DML-1 and DML-2 do not make too obvious difference, and both mean and median stratgies for the standard error are also similar. The two DML-based estimators also have similar results to the EIF-based estimator on all WATEs. 
 
 ## Contact 
 The R code is maintained by Yi Liu (Please feel free to reach out at yi.liu.biostat@gmail.com, if you have any questions).
