@@ -74,20 +74,22 @@ v2 <- c(3,5)
 beta=TRUE
 result.eif <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
                       method="EIF", 
-                      ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
-                      out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
+                      ps.library=c("SL.glm", "SL.glmnet"),
+                      out.library=c("SL.glm", "SL.glmnet"),
                       seed=1)
 print(result.eif)
 ```
+
+We apply the DML-based methods using 5 sample splits (i.e., repeating cross-fitting 5 times by different random sample splitting) and 5 folds for cross-fitting. 
 
 ```{r}
 v1 <- c(3,5)
 v2 <- c(3,5)
 beta=TRUE
 result.dml <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
-                      method="DML", n.folds=5,
-                      ps.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
-                      out.library=c("SL.glm", "SL.glm.interaction", "SL.glmnet"),
+                      method="DML", n.folds=5, n.split=5, 
+                      ps.library=c("SL.glm", "SL.glmnet"),
+                      out.library=c("SL.glm", "SL.glmnet"),
                       seed=1)
 print(result.dml)
 ```

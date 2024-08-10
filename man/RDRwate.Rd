@@ -13,6 +13,7 @@ RDRwate(
   v2 = NA,
   method = "EIF",
   n.folds = 5,
+  n.split = 10,
   ps.library = c("SL.glm", "SL.glm.interaction"),
   out.library = c("SL.glm", "SL.glm.interaction"),
   seed = 1
@@ -35,7 +36,9 @@ RDRwate(
 "EIF" calculates the nuisance functions on the whole dataset, without using cross-fitting;
 "DML" uses cross-fitting on k folds (k = n.folds specified below)}
 
-\item{n.folds}{number of folds used for cross fitting; default is 5}
+\item{n.folds}{number of folds used for cross fitting when using DML methods; default is 5}
+
+\item{n.split}{number of replications for doing the sample splits for cross-fitting when using DML methods; default is 10}
 
 \item{ps.library}{method(s) used for fitting the propensity score model;
 it is chosen from the list of the SuperLearner package, and can be a vector of methods (the ensemble library)}

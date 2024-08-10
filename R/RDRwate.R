@@ -8,7 +8,8 @@
 #' @param method method for estimation: "EIF" or "DML";
 #'               "EIF" calculates the nuisance functions on the whole dataset, without using cross-fitting;
 #'               "DML" uses cross-fitting on k folds (k = n.folds specified below)
-#' @param n.folds number of folds used for cross fitting; default is 5
+#' @param n.folds number of folds used for cross fitting when using DML methods; default is 5
+#' @param n.split number of replications for doing the sample splits for cross-fitting when using DML methods; default is 10
 #' @param ps.library method(s) used for fitting the propensity score model;
 #'                   it is chosen from the list of the SuperLearner package, and can be a vector of methods (the ensemble library)
 #' @param out.library method(s) used for fitting the outcome regression models;
@@ -22,6 +23,7 @@ RDRwate <- function(A,
                     v2=NA,
                     method="EIF",
                     n.folds=5,
+                    n.split=10,
                     ps.library=c("SL.glm", "SL.glm.interaction"),
                     out.library=c("SL.glm", "SL.glm.interaction"),
                     seed=1) {
@@ -55,43 +57,58 @@ RDRwate <- function(A,
     n0 <- sum(1-A)
 
     set.seed(seed=seed)
-    pred.folds <- createFolds(1:n, k=n.folds, list=T)
-    est.dml1 <- se.dml1 <- c()
-    e.h.dml2 <- mu1.h.dml2 <- mu0.h.dml2 <- A.dml2 <- Y.dml2 <- c()
-    for(i in 1:n.folds) {
-      pred.ind <- pred.folds[[i]]
-      train.ind <- (1:n)[-pred.ind]
+    seeds <- round(runif(n.split, min=0, max=10^3*n.split))
+    Est.dml1 <- SE.dml1 <- Est.dml2 <- SE.dml2 <- NULL
 
-      nuisance <- .RDR_nuisance(A=A[train.ind],
-                                Y=Y[train.ind],
-                                X=X[train.ind,],
-                                X.pred=X[pred.ind,],
-                                ps.method=ps.library,
-                                out.method=out.library)
-      e.h <- nuisance$e.h
-      mu1.h <- nuisance$mu1.h
-      mu0.h <- nuisance$mu0.h
+    for(k in 1:n.split) {
+      set.seed(seeds[k])
+      pred.folds <- createFolds(1:n, k=n.folds, list=T)
+      est.dml1 <- se.dml1 <- c()
+      for(i in 1:n.folds) {
+        pred.ind <- pred.folds[[i]]
+        train.ind <- (1:n)[-pred.ind]
+        e.h.dml2 <- mu1.h.dml2 <- mu0.h.dml2 <- A.dml2 <- Y.dml2 <- c()
+        nuisance <- .RDR_nuisance(A=A[train.ind],
+                                  Y=Y[train.ind],
+                                  X=X[train.ind,],
+                                  X.pred=X[pred.ind,],
+                                  ps.method=ps.library,
+                                  out.method=out.library)
+        e.h <- nuisance$e.h
+        mu1.h <- nuisance$mu1.h
+        mu0.h <- nuisance$mu0.h
 
-      result <- .Eif_Wate(A=A[pred.ind], Y=Y[pred.ind], e.h=e.h, mu1.h=mu1.h, mu0.h=mu0.h,
-                          beta=beta, v1=v1, v2=v2)
-      est.dml1 <- cbind(est.dml1, result$Est)
-      se.dml1 <- cbind(se.dml1, result$Std.Err)
+        result <- .Eif_Wate(A=A[pred.ind], Y=Y[pred.ind],
+                            e.h=e.h, mu1.h=mu1.h, mu0.h=mu0.h,
+                            beta=beta, v1=v1, v2=v2)
+        est.dml1 <- cbind(est.dml1, result$Est)
+        se.dml1 <- cbind(se.dml1, result$Std.Err)
 
-      e.h.dml2 <- c(e.h.dml2, e.h)
-      mu1.h.dml2 <- c(mu1.h.dml2, mu1.h)
-      mu0.h.dml2 <- c(mu0.h.dml2, mu0.h)
-      A.dml2 <- c(A.dml2, A[pred.ind])
-      Y.dml2 <- c(Y.dml2, Y[pred.ind])
+        e.h.dml2 <- c(e.h.dml2, e.h)
+        mu1.h.dml2 <- c(mu1.h.dml2, mu1.h)
+        mu0.h.dml2 <- c(mu0.h.dml2, mu0.h)
+        A.dml2 <- c(A.dml2, A[pred.ind])
+        Y.dml2 <- c(Y.dml2, Y[pred.ind])
+      }
+      .dml2 <- .Eif_Wate(A=A.dml2, Y=Y.dml2,
+                         e.h=e.h.dml2, mu1.h=mu1.h.dml2, mu0.h=mu0.h.dml2,
+                         beta=beta, v1=v1, v2=v2)
+
+      Est.dml1 <- rbind(Est.dml1, apply(est.dml1, 1, mean))
+      Est.dml2 <- rbind(Est.dml2, .dml2$Est)
+
+      SE.dml1 <- rbind(SE.dml1, apply(se.dml1, 1, mean)/sqrt(n.folds))
+      SE.dml2 <- rbind(SE.dml2, .dml2$Std.Err)
     }
     result.dml.1 <- data.frame(weights=result$weights,
-                               Est=apply(est.dml1, 1, mean),
-                               Std.Err=apply(se.dml1, 1, mean)/sqrt(n.folds))
+                               Est=apply(Est.dml1, 2, mean, na.rm=T),
+                               SE.mean=apply(SE.dml1, 2, mean, na.rm=T),
+                               SE.median=apply(SE.dml1, 2, median, na.rm=T))
 
-    .dml2 <- .Eif_Wate(A=A.dml2, Y=Y.dml2, e.h=e.h.dml2, mu1.h=mu1.h.dml2, mu0.h=mu0.h.dml2,
-                        beta=beta, v1=v1, v2=v2)
-    result.dml.2 <- data.frame(weights=.dml2$weights,
-                               Est=.dml2$Est,
-                               Std.Err=.dml2$Std.Err)
+    result.dml.2 <- data.frame(weights=result$weights,
+                               Est=apply(Est.dml2, 2, mean, na.rm=T),
+                               SE.mean=apply(SE.dml2, 2, mean, na.rm=T),
+                               SE.median=apply(SE.dml2, 2, median, na.rm=T))
 
     return(list(result.dml.1=result.dml.1, result.dml.2=result.dml.2))
   }
