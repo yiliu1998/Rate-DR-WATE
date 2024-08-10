@@ -105,14 +105,14 @@ weights       Est    Std.Err
 8 beta(5,5) 10.029801 0.87891157
 ```
 
-We apply the DML-based methods using 10 sample splits (i.e., repeating cross-fitting 5 times by different random sample splitting) and 5 folds for cross-fitting. 
+We apply the DML-based methods using 10 sample splits (i.e., repeating cross-fitting 10 times by different random sample splitting) and 5 folds for cross-fitting. 
 
 ```r
 v1 <- c(3,5)
 v2 <- c(3,5)
 beta=TRUE
 result.dml <- RDRwate(A=A, Y=Y, X=X, beta=beta, v1=v1, v2=v2,
-                      method="DML", n.folds=5, n.split=5, 
+                      method="DML", n.folds=5, n.split=10, 
                       ps.library=c("SL.glm", "SL.glmnet"),
                       out.library=c("SL.glm", "SL.glmnet"),
                       seed=1)
