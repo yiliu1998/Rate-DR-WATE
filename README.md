@@ -21,7 +21,7 @@ You can download and run this Rmd file ([click here](https://github.com/yiliu199
 Load our package: 
 
 ```r
-library(RDRwate)
+library(WATE)
 ```
 
 The following packages are also required:
@@ -69,7 +69,7 @@ We also allow users to specify different methods for nuisance function estimatio
 SuperLearner::listWrappers()
 ```
 
-Next, we can implement our package using code as follows. We consider evaluating the following estimands: ATE (overall), ATT (treated), ATC (controls), ATO (overlap weights), ATM (matching weights), ATEN (entropy), and two ATB's (beta weights, with $\nu_1=\nu_2\in\{3,5\}$). As an example, we consider applying our method on the dataset `df.hete`. We include `SL.glm`, `SL.glm.interaction` and `SL.glmnet` in the ensemble library of `SuperLearner` for getting our nuisance function estimates. 
+Next, we can implement our package using code as follows. We consider evaluating the following estimands: ATE (overall), ATT (treated), ATC (controls), ATO (overlap weights), ATM (matching weights), ATEN (entropy), and two ATB's (beta weights, with $\nu_1=\nu_2\in$ {3,5}). As an example, we consider applying our method on the dataset `df.hete`. We include `SL.glm`, `SL.glm.interaction` and `SL.glmnet` in the ensemble library of `SuperLearner` for getting our nuisance function estimates. 
 
 As an important remark, we do not currently allow **missing data** (in all covariates, treatment and outcome) in the dataset. Therefore, if your data have missing values, we suggest either doing a complete-case analysis or imputing missing data first. Once the data is cleaned and prepared, it is ready to run our methods. The first step is to extract the binary treatment vector, outcome vector and covariates matrix (can also be a data frame). 
 
@@ -105,7 +105,7 @@ weights       Est    Std.Err
 8 beta(5,5) 10.029801 0.87891157
 ```
 
-We apply the DML-based methods using 10 sample splits (i.e., repeating cross-fitting 10 times by different random sample splitting) and 5 folds for cross-fitting. 
+We apply the two DML-based methods using a 5-fold cross-fitting with 10 different sample-splittings (i.e., repeating cross-fitting 10 times by **different** random sample splits). 
 
 ```r
 v1 <- c(3,5)
@@ -143,7 +143,7 @@ $result.dml.2
 8 beta(5,5)  9.422549 0.90116910 0.89831503
 ```
 
-The printed results contain both mean and median strategies for standard error estimation, based on the practical recommendation in <a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Chernozhukov et al. (2018)</a>. In this example, DML-1 and DML-2 do not make too obvious difference, and both mean and median stratgies for the standard error are also similar. However, in some cases, the median strategy should be more robust because there could be extreme variances in a small number of sample-splittings. The two DML-based estimators also have similar results to the EIF-based estimator on all WATEs on this data set. 
+The printed results of DML-based methods contain both mean and median strategies for standard error estimation, which is based on the practical recommendation in <a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Chernozhukov et al. (2018)</a>. In this example, DML-1 and DML-2 do not make too outstanding difference, and both mean and median stratgies for the standard error are also similar. However, in some cases, the median strategy should be more robust because there could be extreme variances in a small number of sample-splittings. The two DML-based estimators also have similar results to the EIF-based estimator on all WATEs on this data set. 
 
 ## Contact 
 The R code is maintained by Yi Liu (Please feel free to reach out yi.liu.biostat@gmail.com, if you have any questions).
