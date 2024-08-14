@@ -1,4 +1,4 @@
-Package: RDRwate
+Package: WATE
 Type: Package
 Title: Rate Doubly Robust Estimation for Weighted Average Treatment Effects
 Version: 0.1.0
