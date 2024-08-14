@@ -1,10 +1,10 @@
-# RDRwate
-Rate doubly robust (RDR) estimation for weighted average treatment effects (WATEs). We developed an R package (`RDRwate`) implementing three RDR estimators for WATE, a general class of causal estimands. We allow users implement the estimation and inference for a number of popular WATEs in the class, including ATE, ATT, ATC, ATO (overlap weights), ATM (matching weights), ATEN (entropy weights), and ATB (beta family weights). The proposed estimators include: 
+# WATE
+`WATE` is an R packing implementing rate doubly robust (RDR) estimations for weighted average treatment effects (WATEs). The WATE is a class of general causal estimands targeting different population defined by propensity score weights. This package contains three RDR estimators. We allow users implement the estimation and inference for a number of popular WATEs, including ATE, ATT, ATC, ATO (overlap weights), ATM (matching weights), ATEN (entropy weights), and ATB (beta family weights). The three RDR estimators include: 
 
-* an efficient influence function (EIF)-based estimator; 
-* two double/debiased machine learning (DML)-based estimators (DML-1 and DML-2), which actually applies the cross-fitting algorithm on the EIF-based estimator.
+* the efficient influence function (EIF)-based estimator; and
+* two double/debiased machine learning (DML)-based estimators (denoted as DML-1 and DML-2), which are technically by applying the sample-splitting and cross-fitting (<a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Chernozhukov et al. (2018)</a>) to the EIF-based estimator.
 
-We also implement the variance estimations of these estimators in our package.  
+The variance estimations of these estimators in our package.  
 
 ## Installation
 To install the latest version of the R package from GitHub, please run following commands in R:
@@ -143,10 +143,10 @@ $result.dml.2
 8 beta(5,5)  9.422549 0.90116910 0.89831503
 ```
 
-The printed results contain both mean and median strategies for standard error estimation, based on <a href="https://www.aeaweb.org/articles?id=10.1257/aer.p20171038">Chernozhukov et al. (2017)</a>. In this example, DML-1 and DML-2 do not make too obvious difference, and both mean and median stratgies for the standard error are also similar. The two DML-based estimators also have similar results to the EIF-based estimator on all WATEs. 
+The printed results contain both mean and median strategies for standard error estimation, based on the practical recommendation in <a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Chernozhukov et al. (2018)</a>. In this example, DML-1 and DML-2 do not make too obvious difference, and both mean and median stratgies for the standard error are also similar. However, in some cases, the median strategy should be more robust because there could be extreme variances in a small number of sample-splittings. The two DML-based estimators also have similar results to the EIF-based estimator on all WATEs on this data set. 
 
 ## Contact 
-The R code is maintained by Yi Liu (Please feel free to reach out at yi.liu.biostat@gmail.com, if you have any questions).
+The R code is maintained by Yi Liu (Please feel free to reach out yi.liu.biostat@gmail.com, if you have any questions).
 
 ## Reference
 Please cite the following paper:
