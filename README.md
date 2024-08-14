@@ -12,7 +12,7 @@ To install the latest version of the R package from GitHub, please run following
 ```r
 if (!require("devtools"))
 install.packages("devtools")
-devtools::install_github("yiliu1998/Rate-DR-WATE")
+devtools::install_github("yiliu1998/WATE")
 ```
 
 ## Demonstration
