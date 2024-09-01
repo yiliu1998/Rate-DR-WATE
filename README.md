@@ -1,10 +1,10 @@
 # WATE
-`WATE` is an R packing implementing rate doubly robust (RDR) estimations for weighted average treatment effects (WATEs). The WATE is a class of general causal estimands targeting different population defined by propensity score weights. This package contains three RDR estimators. We allow users implement the estimation and inference for a number of popular WATEs, including ATE, ATT, ATC, ATO (overlap weights), ATM (matching weights), ATEN (entropy weights), and ATB (beta family weights). The three RDR estimators include: 
+`WATE` is an R packing implementing rate doubly robust (RDR) estimations for weighted average treatment effects (WATEs). The WATE is a class of general causal estimands targeting different population defined by propensity score weights (see [Li et al.(2018)](https://www.tandfonline.com/doi/full/10.1080/01621459.2016.1260466) as a representative paper for this concept). Our package contains three RDR estimators and two classical (naive) estimators. We allow users implement the estimation and inference for a number of popular WATEs, including ATE, ATT, ATC, ATO (overlap weights), ATM (matching weights), ATEN (entropy weights), and ATB (beta family weights). The three proposed RDR estimators include: 
 
 * the efficient influence function (EIF)-based estimator; and
-* two double/debiased machine learning (DML)-based estimators (denoted as DML-1 and DML-2), which are technically by applying the sample-splitting and cross-fitting (<a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Chernozhukov et al. (2018)</a>) to the EIF-based estimator.
+* two double/debiased machine learning (DML)-based estimators (denoted as DML-1 and DML-2), which are technically by applying the sample-splitting and cross-fitting ([Chernozhukov et al. (2018)](https://academic.oup.com/ectj/article/21/1/C1/5056401)) to the EIF-based estimator.
 
-The variance estimations of these estimators in our package.  
+The two classical (naive) estimators are the propensity score weighting estimator and the outcome imputation estimator. They are referred to as naive-1 and naive-2 estimators in our paper, respectively. 
 
 ## Installation
 To install the latest version of the R package from GitHub, please run following commands in R:
@@ -121,29 +121,29 @@ print(result.dml)
 
 ```r
 $result.dml.1
-    weights       Est   SE.mean  SE.median
-1   overall 10.238393 0.0917362 0.09172764
-2   treated 10.725430 0.1203668 0.12035407
-3   control  9.727280 0.1360394 0.13605126
-4   overlap 10.162204 0.1056018 0.10558813
-5  matching 10.058743 0.1360952 0.13607341
-6   entropy 10.176439 0.1007624 0.10072919
-7 beta(3,3) 10.041305 0.5411684 0.53918889
-8 beta(5,5)  9.989887 0.9185246 0.90626480
+    weights  Est.mean    SE.mean Est.median  SE.median
+1   overall 10.237493 0.09167897  10.237459 0.09167677
+2   treated 10.723602 0.12023261  10.723158 0.12022327
+3   control  9.727349 0.13599869   9.727354 0.13600613
+4   overlap 10.162038 0.10496583  10.161708 0.10496063
+5  matching 10.058577 0.13540477  10.052414 0.13542817
+6   entropy 10.176429 0.10022423  10.176269 0.10020905
+7 beta(3,3) 10.048625 0.54010367  10.034852 0.53827577
+8 beta(5,5)  9.990965 0.91675641   9.958111 0.90402204
 
 $result.dml.2
-    weights       Est    SE.mean  SE.median
-1   overall 10.235929 0.09182739 0.09195195
-2   treated 10.689941 0.12135043 0.12037325
-3   control  9.758034 0.13511888 0.13590928
-4   overlap 10.150839 0.10492282 0.10503028
-5  matching 10.038948 0.13566287 0.13621179
-6   entropy 10.166876 0.10021070 0.10029119
-7 beta(3,3)  9.789291 0.53855173 0.53947741
-8 beta(5,5)  9.422549 0.90116910 0.89831503
+    weights  Est.mean    SE.mean Est.median  SE.median
+1   overall 10.234441 0.09174239  10.210011 0.09187881
+2   treated 10.686658 0.12112849  10.655065 0.12017883
+3   control  9.758435 0.13507440   9.790092 0.13587548
+4   overlap 10.150758 0.10414168  10.118703 0.10435990
+5  matching 10.034635 0.13498922  10.068590 0.13511639
+6   entropy 10.166961 0.09954993  10.152039 0.09960444
+7 beta(3,3)  9.796277 0.53732307   9.738101 0.53824587
+8 beta(5,5)  9.417174 0.89896963   9.521300 0.89602009
 ```
 
-The printed results of DML-based methods contain both mean and median strategies for standard error estimation, which is based on the practical recommendation in <a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Chernozhukov et al. (2018)</a>. In this example, DML-1 and DML-2 do not make too outstanding difference, and both mean and median stratgies for the standard error are also similar. However, in some cases, the median strategy should be more robust because there could be extreme variances in a small number of sample-splittings. The two DML-based estimators also have similar results to the EIF-based estimator on all WATEs on this data set. 
+The printed results of DML-based methods contain both mean and median-correction strategies for standard error estimation, which is based on the practical recommendation in [Chernozhukov et al. (2018)](https://academic.oup.com/ectj/article/21/1/C1/5056401). In this example, DML-1 and DML-2 do not make too outstanding difference, and both mean and median stratgies for the standard error are also similar. However, in some cases, the median strategy should be more robust because there could be extreme variances in a small number of sample-splittings. The two DML-based estimators also have similar results to the EIF-based estimator on all WATEs on this data set. 
 
 ## Contact 
 The R code is maintained by Yi Liu (Please feel free to reach out yi.liu.biostat@gmail.com, if you have any questions).
