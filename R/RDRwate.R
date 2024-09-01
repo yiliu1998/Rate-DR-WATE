@@ -10,6 +10,7 @@
 #'               "DML" uses cross-fitting on k folds (k = n.folds specified below)
 #' @param n.folds number of folds used for cross fitting when using DML methods; default is 5
 #' @param n.split number of replications for doing the sample splits for cross-fitting when using DML methods; default is 10
+#' @param return.naive whether to calculate and return the two naive estimators
 #' @param ps.library method(s) used for fitting the propensity score model;
 #'                   it is chosen from the list of the SuperLearner package, and can be a vector of methods (the ensemble library)
 #' @param out.library method(s) used for fitting the outcome regression models;
@@ -24,13 +25,14 @@ RDRwate <- function(A,
                     method="EIF",
                     n.folds=5,
                     n.split=10,
+                    return.naive=FALSE,
                     ps.library=c("SL.glm", "SL.glm.interaction"),
                     out.library=c("SL.glm", "SL.glm.interaction"),
                     seed=1) {
 
-  # library(SuperLearner)
-  # library(caret)
-  # library(tidyverse)
+  library(SuperLearner)
+  library(caret)
+  library(tidyverse)
 
   #### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ####
   #### ~~~~   The EIF-based estimators  ~~~~~~ ####
@@ -45,7 +47,14 @@ RDRwate <- function(A,
 
     result.eif <- .Eif_Wate(A=A, Y=Y, e.h=e.h, mu1.h=mu1.h, mu0.h=mu0.h,
                             beta=beta, v1=v1, v2=v2)
-    return(result.eif)
+
+    if(return.naive) {
+      result.naive <- .naive_wate(A=A, Y=Y, e.h=e.h, mu1.h=mu1.h, mu0.h=mu0.h,
+                                  beta=beta, v1=v1, v2=v2)
+      return(list(result.eif=result.eif,  result.naive=result.naive))
+    } else {
+      return(result.eif)
+    }
   }
 
   #### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ####
@@ -55,6 +64,8 @@ RDRwate <- function(A,
     n <- length(A)
     n1 <- sum(A)
     n0 <- sum(1-A)
+    X <- as.data.frame(X)
+    colnames(X) <- paste0("X", 1:ncol(X))
 
     set.seed(seed=seed)
     seeds <- round(runif(n.split, min=0, max=10^3*n.split))
@@ -99,15 +110,20 @@ RDRwate <- function(A,
 
       SE.dml1 <- rbind(SE.dml1, apply(se.dml1, 1, mean)/sqrt(n.folds))
       SE.dml2 <- rbind(SE.dml2, .dml2$Std.Err/sqrt(n.folds))
+
+      print(paste0("Sample split ", k, " done"))
     }
+
     result.dml.1 <- data.frame(weights=result$weights,
-                               Est=apply(Est.dml1, 2, mean, na.rm=T),
+                               Est.mean=apply(Est.dml1, 2, mean, na.rm=T),
                                SE.mean=apply(SE.dml1, 2, mean, na.rm=T),
+                               Est.median=apply(Est.dml1, 2, median, na.rm=T),
                                SE.median=apply(SE.dml1, 2, median, na.rm=T))
 
     result.dml.2 <- data.frame(weights=result$weights,
-                               Est=apply(Est.dml2, 2, mean, na.rm=T),
+                               Est.mean=apply(Est.dml2, 2, mean, na.rm=T),
                                SE.mean=apply(SE.dml2, 2, mean, na.rm=T),
+                               Est.median=apply(Est.dml2, 2, median, na.rm=T),
                                SE.median=apply(SE.dml2, 2, median, na.rm=T))
 
     return(list(result.dml.1=result.dml.1, result.dml.2=result.dml.2))
@@ -130,6 +146,40 @@ RDRwate <- function(A,
   mu0.h = predict(mu0.fit, X.pred)$pred
 
   return(list(e.h=e.h, mu1.h=mu1.h, mu0.h=mu0.h))
+}
+
+.naive_wate <- function(A,
+                        Y,
+                        e.h,
+                        mu1.h,
+                        mu0.h,
+                        beta=FALSE,
+                        v1=NA,
+                        v2=NA) {
+  weights <- c("overall", "treated", "control", "overlap", "matching", "entropy")
+  tilt    <- data.frame(1, e.h, 1-e.h, e.h*(1-e.h), pmin(e.h, 1-e.h),      -e.h*log(e.h)-(1-e.h)*log(1-e.h) )
+
+  n <- length(A)
+  if(beta) {
+    if(length(v1)==length(v2)) {
+      weights <- c(weights, paste0("beta(", v1, ",", v2, ")"))
+      tilt.beta <- matrix(NA, nrow=n, ncol=length(v1))
+      for(i in 1:length(v1)) {
+        tilt.beta[,i]   <- e.h^v1[i]*(1-e.h)^v2[i]
+      }
+      tilt    <- cbind(tilt, tilt.beta)
+    }
+  }
+
+  k <- length(weights)
+  naive.PS <- naive.OR <- c()
+  for(i in 1:k) {
+    naive.OR[i] <- mean(tilt[,i]*(mu1.h-mu0.h))/mean(tilt[,i])
+    IPW <- A*Y/e.h - (1-A)*Y/(1-e.h)
+    naive.PS[i] <- mean(tilt[,i]*IPW)/mean(tilt[,i])
+  }
+  naive.df <- data.frame(weights=weights, naive.PS=naive.PS, naive.OR=naive.OR)
+  return(naive.df)
 }
 
 .Eif_Wate <- function(A,
@@ -170,6 +220,8 @@ RDRwate <- function(A,
     EIF.est[i] <- mean(phi.num)/mean(phi.den)
     EIF[,i] <- tilt[,i]/mean(tilt[,i]) * (psi-EIF.est[i]) + d.tilt[,i]/mean(tilt[,i]) * (tau.X-EIF.est[i])*(A-e.h)
   }
-  EIF.df <- data.frame(weights=weights, Est=EIF.est, Std.Err=sqrt(colMeans(EIF^2)/n))
+  EIF.df <- data.frame(weights=weights,
+                       Est=EIF.est,
+                       Std.Err=sqrt(colMeans(EIF^2)/n))
   return(EIF.df)
 }
