@@ -2,7 +2,7 @@
 % Please edit documentation in R/RDRwate.R
 \name{RDRwate}
 \alias{RDRwate}
-\title{Rate doubly robust (RDR) estimation for weighted average treatment effect (WATE)}
+\title{Rate doubly robust (RDR) estimation for weighted average treatment effect (wate)}
 \usage{
 RDRwate(
   A,
@@ -14,40 +14,41 @@ RDRwate(
   method = "EIF",
   n.folds = 5,
   n.split = 10,
+  return.naive = FALSE,
   ps.library = c("SL.glm", "SL.glm.interaction"),
   out.library = c("SL.glm", "SL.glm.interaction"),
-  seed = 1
+  seed = 4399
 )
 }
 \arguments{
-\item{A}{treatment vector; should be 0 or 1 valued, where 0 is control, and 1 is treated}
+\item{A}{the treatment vector, which should be valued on 0 or 1, where 0 is the control, and 1 is the treated}
 
-\item{Y}{outcome vector}
+\item{Y}{the outcome vector}
 
-\item{X}{covariate matrix}
+\item{X}{the covariate matrix or vector (if only one covariate)}
 
-\item{beta}{whether to calculate WATE based on beta weights; if so, specify the below v1 & v2 parameters}
+\item{beta}{whether to calculate WATEs based on beta weights; if so, specify the `v1` and `v2` parameters}
 
-\item{v1}{model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and length must be the same as v2}
+\item{v1}{a model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and the length must be the same as v2}
 
-\item{v2}{model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and length must be the same as v1}
+\item{v2}{a model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and the length must be the same as v1}
 
 \item{method}{method for estimation: "EIF" or "DML";
 "EIF" calculates the nuisance functions on the whole dataset, without using cross-fitting;
-"DML" uses cross-fitting on k folds (k = n.folds specified below)}
+"DML" uses cross-fitting on k folds (if use DML, the `n.folds` and `n.split` parameters need to be specified)}
 
 \item{n.folds}{number of folds used for cross fitting when using DML methods; default is 5}
 
 \item{n.split}{number of replications for doing the sample splits for cross-fitting when using DML methods; default is 10}
 
-\item{ps.library}{method(s) used for fitting the propensity score model;
-it is chosen from the list of the SuperLearner package, and can be a vector of methods (the ensemble library)}
+\item{return.naive}{whether to calculate and return the two naive estimators (the propensity score weighted and outcome imputed estimators)}
 
-\item{out.library}{method(s) used for fitting the outcome regression models;
-it is chosen from the list of the SuperLearner package, and can be a vector of methods (the ensemble library)}
+\item{ps.library}{method(s) used for fitting the propensity score model, chosen from the list in the SuperLearner package, and can be a vector of methods ensemble; see `SuperLearner::listWrappers()`}
 
-\item{seed}{seed for generating random numbers used in set.seed() function when splitting data; default is 1}
+\item{out.library}{method(s) used for fitting the outcome regression models, chosen from the list in the SuperLearner package, and can be a vector of methods ensemble; see `SuperLearner::listWrappers()`}
+
+\item{seed}{seed for generating random numbers used in set.seed() function when splitting data; default is 4399}
 }
 \description{
-Rate doubly robust (RDR) estimation for weighted average treatment effect (WATE)
+Rate doubly robust (RDR) estimation for weighted average treatment effect (wate)
 }
