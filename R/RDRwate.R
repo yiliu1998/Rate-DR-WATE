@@ -1,21 +1,19 @@
-#' Rate doubly robust (RDR) estimation for weighted average treatment effect (WATE)
-#' @param A treatment vector; should be 0 or 1 valued, where 0 is control, and 1 is treated
-#' @param Y outcome vector
-#' @param X covariate matrix
-#' @param beta whether to calculate WATE based on beta weights; if so, specify the below v1 & v2 parameters
-#' @param v1 model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and length must be the same as v2
-#' @param v2 model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and length must be the same as v1
+#' Rate doubly robust (RDR) estimation for weighted average treatment effect (wate)
+#' @param A the treatment vector, which should be valued on 0 or 1, where 0 is the control, and 1 is the treated
+#' @param Y the outcome vector
+#' @param X the covariate matrix or vector (if only one covariate)
+#' @param beta whether to calculate WATEs based on beta weights; if so, specify the `v1` and `v2` parameters
+#' @param v1 a model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and the length must be the same as v2
+#' @param v2 a model parameter in beta weights; default is NA (beta weights are not estimated); can be a vector and the length must be the same as v1
 #' @param method method for estimation: "EIF" or "DML";
 #'               "EIF" calculates the nuisance functions on the whole dataset, without using cross-fitting;
-#'               "DML" uses cross-fitting on k folds (k = n.folds specified below)
+#'               "DML" uses cross-fitting on k folds (if use DML, the `n.folds` and `n.split` parameters need to be specified)
 #' @param n.folds number of folds used for cross fitting when using DML methods; default is 5
 #' @param n.split number of replications for doing the sample splits for cross-fitting when using DML methods; default is 10
-#' @param return.naive whether to calculate and return the two naive estimators
-#' @param ps.library method(s) used for fitting the propensity score model;
-#'                   it is chosen from the list of the SuperLearner package, and can be a vector of methods (the ensemble library)
-#' @param out.library method(s) used for fitting the outcome regression models;
-#'                    it is chosen from the list of the SuperLearner package, and can be a vector of methods (the ensemble library)
-#' @param seed seed for generating random numbers used in set.seed() function when splitting data; default is 1
+#' @param return.naive whether to calculate and return the two naive estimators (the propensity score weighted and outcome imputed estimators)
+#' @param ps.library method(s) used for fitting the propensity score model, chosen from the list in the SuperLearner package, and can be a vector of methods ensemble; see `SuperLearner::listWrappers()`
+#' @param out.library method(s) used for fitting the outcome regression models, chosen from the list in the SuperLearner package, and can be a vector of methods ensemble; see `SuperLearner::listWrappers()`
+#' @param seed seed for generating random numbers used in set.seed() function when splitting data; default is 4399
 RDRwate <- function(A,
                     Y,
                     X,
@@ -28,11 +26,12 @@ RDRwate <- function(A,
                     return.naive=FALSE,
                     ps.library=c("SL.glm", "SL.glm.interaction"),
                     out.library=c("SL.glm", "SL.glm.interaction"),
-                    seed=1) {
+                    seed=4399) {
 
   library(SuperLearner)
   library(caret)
   library(tidyverse)
+  X <- as.matrix(X)
 
   #### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ####
   #### ~~~~   The EIF-based estimators  ~~~~~~ ####
@@ -142,6 +141,7 @@ RDRwate <- function(A,
 
   mu1.fit = SuperLearner(Y=Y[A==1], X=X[A==1,], SL.library=out.method)
   mu1.h = predict(mu1.fit, X.pred)$pred
+
   mu0.fit = SuperLearner(Y=Y[A==0], X=X[A==0,], SL.library=out.method)
   mu0.h = predict(mu0.fit, X.pred)$pred
 
@@ -157,9 +157,9 @@ RDRwate <- function(A,
                         v1=NA,
                         v2=NA) {
   weights <- c("overall", "treated", "control", "overlap", "matching", "entropy")
-  tilt    <- data.frame(1, e.h, 1-e.h, e.h*(1-e.h), pmin(e.h, 1-e.h),      -e.h*log(e.h)-(1-e.h)*log(1-e.h) )
+  tilt    <- data.frame(1, e.h, 1-e.h, e.h*(1-e.h), pmin(e.h, 1-e.h), -e.h*log(e.h)-(1-e.h)*log(1-e.h) )
 
-  n <- length(A)
+  n <- length(Y)
   if(beta) {
     if(length(v1)==length(v2)) {
       weights <- c(weights, paste0("beta(", v1, ",", v2, ")"))
@@ -172,13 +172,17 @@ RDRwate <- function(A,
   }
 
   k <- length(weights)
-  naive.PS <- naive.OR <- c()
+  naive.PS <- naive.PS.sd <- naive.OR <- naive.OR.sd <- c()
   for(i in 1:k) {
     naive.OR[i] <- mean(tilt[,i]*(mu1.h-mu0.h))/mean(tilt[,i])
+    naive.OR.sd[i] <- sqrt(var(tilt[,i]*(mu1.h-mu0.h)/mean(tilt[,i])) / n)
     IPW <- A*Y/e.h - (1-A)*Y/(1-e.h)
     naive.PS[i] <- mean(tilt[,i]*IPW)/mean(tilt[,i])
+    naive.PS.sd[i] <- sqrt(var(tilt[,i]*IPW/mean(tilt[,i])) / n)
   }
-  naive.df <- data.frame(weights=weights, naive.PS=naive.PS, naive.OR=naive.OR)
+  naive.df <- data.frame(weights=weights,
+                         naive.PS=naive.PS, naive.PS.sd=naive.PS.sd,
+                         naive.OR=naive.OR, naive.OR.sd=naive.OR.sd)
   return(naive.df)
 }
 
