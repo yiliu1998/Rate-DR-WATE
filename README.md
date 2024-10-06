@@ -16,27 +16,11 @@ devtools::install_github("yiliu1998/WATE")
 ```
 
 ## Demonstration
-You can download and run this Rmd file ([click here](https://github.com/yiliu1998/Rate-DR-WATE/tree/main/vignettes)) in your R Studio after downloading the package, which gives an illustrative example of our package. We also demonstrate the R code in it as follows. 
 
-Load our package: 
+We demonstrate the use of `WATE` package as follows. First, the following code load the package and two sets of pre-generated observational data (`df.homo` and `df.hete`). These example data are a part of the package and can be loaded in your R when the package is installed. 
 
 ```r
 library(WATE)
-```
-
-The following packages are also required:
-
-```r
-library(dplyr)
-library(ggplot2)
-library(SuperLearner)
-library(glmnet)
-library(caret)
-```
-
-Running the following code, two sets of pre-generated observational data (`df.homo` and `df.hete`) will show up in the R environment. 
-
-```r
 load(system.file("data", "example.Rdata", package="RDRwate"))
 ```
 
