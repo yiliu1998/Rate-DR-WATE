@@ -28,11 +28,8 @@ RDRwate <- function(A,
                     out.library=c("SL.glm", "SL.glm.interaction"),
                     seed=4399) {
 
-  library(SuperLearner)
-  library(caret)
-  library(tidyverse)
   X <- as.matrix(X)
-
+  set.seed(seed=seed)
   #### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ####
   #### ~~~~   The EIF-based estimators  ~~~~~~ ####
   #### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ####
@@ -65,8 +62,7 @@ RDRwate <- function(A,
     n0 <- sum(1-A)
     X <- as.data.frame(X)
     colnames(X) <- paste0("X", 1:ncol(X))
-
-    set.seed(seed=seed)
+    
     seeds <- round(runif(n.split, min=0, max=10^3*n.split))
     Est.dml1 <- SE.dml1 <- Est.dml2 <- SE.dml2 <- NULL
 
