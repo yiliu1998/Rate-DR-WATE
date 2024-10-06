@@ -9,11 +9,14 @@ Authors@R: c(
     person("Shu", "Yang", email = "syang24@ncsu.edu", role = "aut"))
 Maintainer: Yi Liu <yi.iu.biostat@gmail.com>
 Description: The package implements rate doubly robust (RDR) estimation for weighted average treatment effect (WATE). 
-    It includes a number of popular WATEs: 
-    ATE [overall], ATT [treated], ATC [controls], ATO [overlap weights], 
-    ATM [matching weights], ATEN [entropy weights], and ATB [beta weights]. 
+    It includes a number of popular WATEs: ATE (overall), ATT (treated), ATC (controls), 
+    ATO (overlap weights), ATM (matching weights), ATEN (entropy weights), and ATB (beta weights). 
     The proposed estimators include the efficient influence function (EIF) based estimator 
     and two double/debiased machine learning (DML) estimators, applying the cross-fitting algorithm to the EIF estimator.
+Imports:
+	SuperLearner,
+	caret,
+	tidyverse
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
